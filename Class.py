@@ -2,7 +2,7 @@ class Player:
     def __init__(self, name, chip_value, user):
         self.name = name
         self.chip_value = chip_value
-        self.user = user
+        self.user = user  # bot = True, player = False.
 
     def get_name(self):
         return self.name

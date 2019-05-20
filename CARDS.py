@@ -22,7 +22,7 @@ def give_card(lst):
     for i in lst:
         card1 = random.choice(list_of_cards)
         card2 = random.choice(list_of_cards)
-        i = i + "[" + card1 + "]" + "[" + card2 + "]"
+        i = str(i) + " [" + card1 + "]" + "[" + card2 + "]"
         list_of_cards.remove(card1)
         list_of_cards.remove(card2)
         final_player.append(i)
