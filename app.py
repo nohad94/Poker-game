@@ -9,5 +9,5 @@ if __name__ == "__main__":
     num_bot_players = input("How many bots do you want: ")
     lobby = Lobby(num_user_players, num_bot_players)
     lobby.init_lobby(5000)
-    lobby.start_round()
+    lobby.start_game()
     print(f"Lobby: {lobby}")

@@ -33,19 +33,3 @@ class Player:
     def __repr__(self):
         return str({"name": self.name, "chip": self.chip_value, "cards": self.cards})
 
-
-# def player_action():
-#     round_list = lst
-#     print(round_list)
-#
-#     for player in round_list:
-#         player_split = player.split()
-#         print(player_split)
-#         if player_split[2] == "False":  # allows players to fold or check
-#             action = input("What would you like to do?: ")
-#             if action == "Check":
-#                 pass
-#             if action == "Fold":
-#                 round_list.remove(player)
-#                 # bots always check
-#     return round_list

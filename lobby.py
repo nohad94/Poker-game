@@ -1,6 +1,4 @@
 import random
-from random import shuffle
-
 from player import *
 from deck import *
 
@@ -15,6 +13,8 @@ class Lobby:
         self.deck = Deck()
         self.discarded = []
         self.state = "Beginning"
+        self.num_rounds = 1
+        self.num_games = 0
 
     def generate_players(self, num_players, num_bots):
         player_list = []
@@ -34,18 +34,61 @@ class Lobby:
     def __repr__(self):
         return str({"players": self.players, "dealer": self.dealer, "deck": self.deck})
 
-    def init_lobby(self, chips=5000):
+    def init_lobby(self, chips=int(input("Starting Chips: "))):
         for player in self.players:
             player.init_player(chips)
 
+    def start_game(self):
+        self.num_games += 1
+        print("Hand number: " + str(self.num_games))
+        self.play_rounds()
+
+    def play_rounds(self):
+        self.start_round()
+        while self.num_rounds < 5 and len(self.players) > 0:
+            if len(self.players) == 1:
+                print("You are the winner " + self.players[0].name + "!")
+                break
+            if self.num_rounds == 2:
+                print("Flop")
+                self.num_rounds += 1
+                self.player_action()
+            if self.num_rounds == 3:
+                print("Turn")
+                self.num_rounds += 1
+                self.player_action()
+            if self.num_rounds == 4:
+                print("River")
+                self.player_action()
+                self.determine_winner()
+                break
+
     def start_round(self):
+        print("Pre-Flop")
         self.hand_out_cards()
+        self.num_rounds += 1
+        self.player_action()
+
+    def determine_winner(self):
+        winner = self.players[0].name
+        print("You are the winner " + str(winner) + "!")
 
     def hand_out_cards(self):
         cards_to_deal = 2
-
         for i in range(cards_to_deal):
             for player in self.players:
                 player.add_card(self.deck.cards.pop())
+
+    def player_action(self):
+        for player in self.players:
+            if not getattr(player, "user"):  # allows players to fold or check
+                action = input(getattr(player, "name") + ", what would you like to do?: ")
+                if action == "Check":
+                    pass
+                if action == "Fold":
+                    self.players.remove(player)
+                    # bots always check
+        return self.players
+
 
 
