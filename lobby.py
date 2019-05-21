@@ -15,6 +15,7 @@ class Lobby:
         self.state = "Beginning"
         self.num_rounds = 1
         self.num_games = 0
+        self.game_pot = 0
 
     def generate_players(self, num_players, num_bots):
         player_list = []
@@ -34,7 +35,7 @@ class Lobby:
     def __repr__(self):
         return str({"players": self.players, "dealer": self.dealer, "deck": self.deck})
 
-    def init_lobby(self, chips=int(input("Starting Chips: "))):
+    def init_lobby(self, chips=0):
         for player in self.players:
             player.init_player(chips)
 
@@ -44,11 +45,15 @@ class Lobby:
         self.play_rounds()
 
     def play_rounds(self):
-        self.start_round()
         while self.num_rounds < 5 and len(self.players) > 0:
             if len(self.players) == 1:
                 print("You are the winner " + self.players[0].name + "!")
                 break
+            if self.num_rounds == 1:
+                print("Pre-Flop")
+                self.hand_out_cards()
+                self.num_rounds += 1
+                self.player_action()
             if self.num_rounds == 2:
                 print("Flop")
                 self.num_rounds += 1
@@ -62,12 +67,6 @@ class Lobby:
                 self.player_action()
                 self.determine_winner()
                 break
-
-    def start_round(self):
-        print("Pre-Flop")
-        self.hand_out_cards()
-        self.num_rounds += 1
-        self.player_action()
 
     def determine_winner(self):
         winner = self.players[0].name
@@ -83,11 +82,21 @@ class Lobby:
         for player in self.players:
             if not getattr(player, "user"):  # allows players to fold or check
                 action = input(getattr(player, "name") + ", what would you like to do?: ")
-                if action == "Check":
+                print(getattr(player, "chip_value"))
+                if action == "Check" or action == "check":
                     pass
-                if action == "Fold":
+                if action == "Fold" or action == "fold":
                     self.players.remove(player)
-                    # bots always check
+                if action == "Bet" or action == "bet":
+                    bet = input("How much do you want to bet?: ")
+                    if getattr(player, "chip_value") - int(bet) > 0:
+                        self.game_pot += int(bet)
+                        setattr(player, "chip_value", getattr(player, "chip_value") - int(bet))
+                        print(str(bet) + " was bet!")
+                        print("Pot is currently: " + str(self.game_pot))
+                    else:
+                        print("You do not have enough chips!")
+
         return self.players
 
 
