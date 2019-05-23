@@ -79,25 +79,52 @@ class Lobby:
                 player.add_card(self.deck.cards.pop())
 
     def player_action(self):
+        current_bet = 0
         for player in self.players:
-            if not getattr(player, "user"):  # allows players to fold or check
-                action = input(getattr(player, "name") + ", what would you like to do?: ")
-                print(getattr(player, "chip_value"))
-                if action == "Check" or action == "check":
-                    pass
-                if action == "Fold" or action == "fold":
-                    self.players.remove(player)
-                if action == "Bet" or action == "bet":
-                    bet = input("How much do you want to bet?: ")
-                    if getattr(player, "chip_value") - int(bet) > 0:
-                        self.game_pot += int(bet)
-                        setattr(player, "chip_value", getattr(player, "chip_value") - int(bet))
-                        print(str(bet) + " was bet!")
-                        print("Pot is currently: " + str(self.game_pot))
-                    else:
-                        print("You do not have enough chips!")
+            has_player_done_action = False
+            was_their_a_bet = False
+            was_their_a_raise = False
+            current_player_list = []
 
+            while not has_player_done_action:
+                if not getattr(player, "user"):  # allows players to fold or check
+                    action = input(getattr(player, "name") + ", what would you like to do?: ")
+
+                    if action == "Check" or action == "check":  # check
+                        has_player_done_action = True
+                        current_player_list.append(player)
+                        pass
+
+                    if action == "Fold" or action == "fold":  # fold
+                        self.players.remove(player)
+                        has_player_done_action = True
+
+                    if action == "Bet" or action == "bet":  # bet
+                        bet = input("How much do you want to bet?: ")
+                        if getattr(player, "chip_value") - int(bet) > 0:
+                            current_bet = int(bet)
+                            self.game_pot += int(bet)  # adds the bet to the pot
+                            setattr(player, "chip_value", getattr(player, "chip_value") - int(bet))  # removes the bet from the chip count of the player
+                            print(str(bet) + " was bet!")
+                            print("Pot is currently: " + str(self.game_pot))
+                            has_player_done_action = True
+                            was_their_a_bet = True
+                        else:
+                            print("You do not have enough chips!")
+
+                    if action == "Call" or action == "call":
+                        if current_bet > 0:
+                            if not (getattr(player, "chip_value") - current_bet) < 0:
+                                self.game_pot += current_bet
+                                setattr(player, "chip_value", getattr(player, "chip_value") - current_bet)
+                                has_player_done_action = True
+                            else:
+                                print("You do not have enough chips!")
+                                all_in = input("Would you like to go all in? ")
+                                if all_in == "Yes" or all_in == "yes":
+                                    self.game_pot += getattr(player, "chip_value")
+                                    setattr(player, "chip_value", 0)
+                                    has_player_done_action = True
+                                else:
+                                    self.players.remove(player)
         return self.players
-
-
-
