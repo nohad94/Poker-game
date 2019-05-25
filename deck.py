@@ -19,5 +19,6 @@ class Deck:
         shuffle(deck)
         return deck
 
+
     def __repr__(self):
         return str({"cards": self.cards})
